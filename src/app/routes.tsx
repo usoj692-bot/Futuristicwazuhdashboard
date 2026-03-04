@@ -3,6 +3,7 @@ import { LandingPage } from "./components/LandingPage";
 import { SignInPage } from "./components/SignInPage";
 import { SolarSystemDashboard } from "./components/SolarSystemDashboard";
 import { PlanetDetailPage } from "./components/PlanetDetailPage";
+import { ModuleDashboard } from "./components/ModuleDashboard";
 
 export const router = createBrowserRouter([
   {
@@ -20,5 +21,9 @@ export const router = createBrowserRouter([
   {
     path: "/planet/:planetId",
     Component: PlanetDetailPage,
+  },
+  {
+    path: "/module/:moduleId",
+    Component: ModuleDashboard,
   },
 ]);

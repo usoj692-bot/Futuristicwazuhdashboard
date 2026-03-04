@@ -214,9 +214,9 @@ export function SolarSystemDashboard() {
     const typingDuration = randomMessage.length * 40; // 40ms per character
     const totalDelay = typingDuration + 1200; // Add 1.2s pause after typing completes
 
-    // Navigate to planet detail page after delay
+    // Navigate to module dashboard page after delay
     navigationTimeoutRef.current = setTimeout(() => {
-      navigate(`/planet/${component.id}`);
+      navigate(`/module/${component.id}`);
     }, totalDelay);
   };
 
@@ -289,37 +289,39 @@ export function SolarSystemDashboard() {
 
   return (
     <div className="relative w-full h-screen overflow-hidden">
-      {/* Dark Space Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-black via-[#0a0a1a] to-[#000000]">
-        {/* Subtle deep space nebula glow */}
-        <div className="absolute top-1/4 right-1/4 w-[800px] h-[800px] bg-gradient-radial from-purple-900/10 via-transparent to-transparent blur-3xl" />
-        <div className="absolute bottom-1/3 left-1/3 w-[700px] h-[700px] bg-gradient-radial from-blue-900/8 via-transparent to-transparent blur-3xl" />
-
-        {/* Animated starfield */}
+      {/* Deep Space Black Background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-black via-[#000000] to-[#050510]">
+        {/* Enhanced twinkling stars with drift */}
         <div className="absolute inset-0">
-          {[...Array(150)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute w-[1px] h-[1px] bg-white rounded-full"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                opacity: Math.random() * 0.5 + 0.2,
-              }}
-              animate={{
-                opacity: [
-                  Math.random() * 0.5 + 0.2,
-                  Math.random() * 0.8 + 0.2,
-                  Math.random() * 0.5 + 0.2,
-                ],
-              }}
-              transition={{
-                duration: 2 + Math.random() * 3,
-                repeat: Infinity,
-                delay: Math.random() * 2,
-              }}
-            />
-          ))}
+          {[...Array(250)].map((_, i) => {
+            const size = Math.random() > 0.7 ? 2 : 1;
+            const brightness = Math.random() * 0.6 + 0.5;
+            return (
+              <motion.div
+                key={i}
+                className="absolute bg-white rounded-full"
+                style={{
+                  width: `${size}px`,
+                  height: `${size}px`,
+                  left: `${Math.random() * 100}%`,
+                  top: `${Math.random() * 100}%`,
+                  boxShadow: `0 0 ${size * 2}px rgba(255, 255, 255, ${brightness})`,
+                }}
+                animate={{
+                  opacity: [brightness * 0.6, brightness, brightness * 0.6],
+                  scale: [1, 1.2, 1],
+                  x: [0, Math.random() * 20 - 10, 0],
+                  y: [0, Math.random() * 20 - 10, 0],
+                }}
+                transition={{
+                  duration: 3 + Math.random() * 4,
+                  repeat: Infinity,
+                  delay: Math.random() * 3,
+                  ease: "easeInOut",
+                }}
+              />
+            );
+          })}
         </div>
 
         {/* Faint holographic sci-fi HUD lines */}
@@ -346,7 +348,7 @@ export function SolarSystemDashboard() {
       {/* Deep Blue Pulsating Radiation from Core */}
       <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
         <motion.div
-          className="absolute w-[900px] h-[900px] bg-blue-600/20 rounded-full blur-[200px]"
+          className="absolute w-[900px] h-[900px] bg-yellow-500/20 rounded-full blur-[200px]"
           animate={{
             scale: [1, 1.08, 1],
             opacity: [0.2, 0.3, 0.2],
@@ -358,7 +360,7 @@ export function SolarSystemDashboard() {
           }}
         />
         <motion.div
-          className="absolute w-[600px] h-[600px] bg-cyan-500/12 rounded-full blur-[150px]"
+          className="absolute w-[600px] h-[600px] bg-amber-400/12 rounded-full blur-[150px]"
           animate={{
             scale: [1.08, 1, 1.08],
             opacity: [0.12, 0.2, 0.12],
@@ -460,13 +462,13 @@ export function SolarSystemDashboard() {
                       "linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.03) 100%)",
                     backdropFilter: "blur(30px)",
                     boxShadow:
-                      "inset 15px 15px 30px rgba(255,255,255,0.08), 0 0 80px rgba(6, 182, 212, 0.4)",
+                      "inset 15px 15px 30px rgba(255,255,255,0.08), 0 0 80px rgba(250, 204, 21, 0.5)",
                   }}
                   animate={{
                     boxShadow: [
-                      "inset 15px 15px 30px rgba(255,255,255,0.08), 0 0 80px rgba(6, 182, 212, 0.4)",
-                      "inset 15px 15px 30px rgba(255,255,255,0.12), 0 0 100px rgba(6, 182, 212, 0.6)",
-                      "inset 15px 15px 30px rgba(255,255,255,0.08), 0 0 80px rgba(6, 182, 212, 0.4)",
+                      "inset 15px 15px 30px rgba(255,255,255,0.08), 0 0 80px rgba(250, 204, 21, 0.5)",
+                      "inset 15px 15px 30px rgba(255,255,255,0.12), 0 0 100px rgba(251, 191, 36, 0.7)",
+                      "inset 15px 15px 30px rgba(255,255,255,0.08), 0 0 80px rgba(250, 204, 21, 0.5)",
                     ],
                   }}
                   transition={{
@@ -485,7 +487,7 @@ export function SolarSystemDashboard() {
 
                 {/* Orbiting Rings */}
                 <motion.div
-                  className="absolute top-1/2 left-1/2 w-32 h-32 border border-cyan-400/20 rounded-full -translate-x-1/2 -translate-y-1/2"
+                  className="absolute top-1/2 left-1/2 w-32 h-32 border border-yellow-400/20 rounded-full -translate-x-1/2 -translate-y-1/2"
                   animate={{ rotate: -360 }}
                   transition={{
                     duration: 20,
@@ -494,7 +496,7 @@ export function SolarSystemDashboard() {
                   }}
                 />
                 <motion.div
-                  className="absolute top-1/2 left-1/2 w-40 h-40 border border-blue-400/10 rounded-full -translate-x-1/2 -translate-y-1/2"
+                  className="absolute top-1/2 left-1/2 w-40 h-40 border border-amber-400/10 rounded-full -translate-x-1/2 -translate-y-1/2"
                   animate={{ rotate: 360 }}
                   transition={{
                     duration: 25,

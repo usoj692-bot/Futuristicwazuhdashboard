@@ -41,36 +41,44 @@ export function LandingPage() {
 
   return (
     <div className="relative w-full h-screen overflow-hidden">
-      {/* Premium Dark Background with Gradient */}
+      {/* Deep Space Black Background */}
       <div
         className="absolute inset-0"
         style={{
-          background: "linear-gradient(135deg, #05070D 0%, #0B1220 100%)",
+          background: "linear-gradient(135deg, #000000 0%, #0a0a0f 50%, #000000 100%)",
         }}
       >
-        {/* Soft animated particles */}
+        {/* Enhanced twinkling stars with drift */}
         <div className="absolute inset-0">
-          {[...Array(100)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute w-[2px] h-[2px] bg-blue-400/40 rounded-full"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-              }}
-              animate={{
-                opacity: [0.2, 0.6, 0.2],
-                scale: [1, 1.5, 1],
-                y: [0, -30, 0],
-              }}
-              transition={{
-                duration: 3 + Math.random() * 2,
-                repeat: Infinity,
-                delay: Math.random() * 2,
-                ease: "easeInOut",
-              }}
-            />
-          ))}
+          {[...Array(200)].map((_, i) => {
+            const size = Math.random() > 0.7 ? 2 : 1;
+            const brightness = Math.random() * 0.6 + 0.5;
+            return (
+              <motion.div
+                key={i}
+                className="absolute bg-white rounded-full"
+                style={{
+                  width: `${size}px`,
+                  height: `${size}px`,
+                  left: `${Math.random() * 100}%`,
+                  top: `${Math.random() * 100}%`,
+                  boxShadow: `0 0 ${size * 2}px rgba(255, 255, 255, ${brightness})`,
+                }}
+                animate={{
+                  opacity: [brightness * 0.6, brightness, brightness * 0.6],
+                  scale: [1, 1.2, 1],
+                  x: [0, Math.random() * 20 - 10, 0],
+                  y: [0, Math.random() * 20 - 10, 0],
+                }}
+                transition={{
+                  duration: 3 + Math.random() * 4,
+                  repeat: Infinity,
+                  delay: Math.random() * 3,
+                  ease: "easeInOut",
+                }}
+              />
+            );
+          })}
         </div>
 
         {/* Very subtle moving nebula haze */}

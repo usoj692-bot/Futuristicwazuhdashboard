@@ -144,11 +144,55 @@ export function PlanetDetailPage() {
 
   return (
     <motion.div
-      className="relative w-full h-screen overflow-hidden bg-[#050505]"
+      className="relative w-full h-screen overflow-hidden"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.6 }}
     >
+      {/* Deep Space Black Background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-black via-[#000000] to-[#050510]">
+        {/* Enhanced twinkling stars with drift */}
+        <div className="absolute inset-0">
+          {[...Array(200)].map((_, i) => {
+            const size = Math.random() > 0.7 ? 2 : 1;
+            const brightness = Math.random() * 0.6 + 0.5;
+            return (
+              <motion.div
+                key={i}
+                className="absolute bg-white rounded-full"
+                style={{
+                  width: `${size}px`,
+                  height: `${size}px`,
+                  left: `${Math.random() * 100}%`,
+                  top: `${Math.random() * 100}%`,
+                  boxShadow: `0 0 ${size * 2}px rgba(255, 255, 255, ${brightness})`,
+                }}
+                animate={{
+                  opacity: [brightness * 0.6, brightness, brightness * 0.6],
+                  scale: [1, 1.2, 1],
+                  x: [0, Math.random() * 20 - 10, 0],
+                  y: [0, Math.random() * 20 - 10, 0],
+                }}
+                transition={{
+                  duration: 3 + Math.random() * 4,
+                  repeat: Infinity,
+                  delay: Math.random() * 3,
+                  ease: "easeInOut",
+                }}
+              />
+            );
+          })}
+        </div>
+
+        {/* Faint holographic HUD lines */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute top-1/3 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-cyan-400 to-transparent" />
+          <div className="absolute top-2/3 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-blue-400 to-transparent" />
+          <div className="absolute left-1/4 top-0 bottom-0 w-[1px] bg-gradient-to-b from-transparent via-violet-400/50 to-transparent" />
+          <div className="absolute left-3/4 top-0 bottom-0 w-[1px] bg-gradient-to-b from-transparent via-blue-400/50 to-transparent" />
+        </div>
+      </div>
+
       {/* Noise Overlay */}
       <div 
         className="absolute inset-0 opacity-[0.02] pointer-events-none"
