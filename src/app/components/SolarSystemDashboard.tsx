@@ -44,6 +44,7 @@ export function SolarSystemDashboard() {
     events: 45234,
     compliance: 87,
   });
+  const [hoveredPlanetId, setHoveredPlanetId] = useState<string | null>(null);
 
   // Check if user is logged in
   useEffect(() => {
@@ -575,23 +576,32 @@ export function SolarSystemDashboard() {
                       style={{
                         x: initialX,
                         y: initialY,
+                        zIndex: hoveredPlanetId === component.id ? 50 : 10,
                       }}
                       animate={{
                         x: ellipsePath.map((p) => p.x),
                         y: ellipsePath.map((p) => p.y),
+                        opacity: hoveredPlanetId && hoveredPlanetId !== component.id ? 0.7 : 1,
                       }}
                       transition={{
                         duration: component.orbitSpeed,
                         repeat: Infinity,
                         ease: "linear",
+                        opacity: { duration: 0.3, ease: "easeOut" },
                       }}
                     >
                       <motion.div
                         className="cursor-pointer relative -translate-x-1/2 -translate-y-1/2"
-                        whileHover={{ scale: 1.12 }}
+                        animate={{
+                          scale: hoveredPlanetId === component.id ? 1.1 : 1,
+                          y: hoveredPlanetId === component.id ? -20 : 0,
+                        }}
+                        transition={{ duration: 0.3, ease: "easeOut" }}
                         onClick={() =>
                           handlePlanetClick(component)
                         }
+                        onMouseEnter={() => setHoveredPlanetId(component.id)}
+                        onMouseLeave={() => setHoveredPlanetId(null)}
                       >
                         {/* Subtle glow */}
                         <motion.div
@@ -599,11 +609,13 @@ export function SolarSystemDashboard() {
                           style={{
                             width: component.size,
                             height: component.size,
-                            background: `radial-gradient(circle, rgba(6, 182, 212, 0.2), transparent)`,
                           }}
-                          whileHover={{
-                            background: `radial-gradient(circle, rgba(6, 182, 212, 0.35), transparent)`,
+                          animate={{
+                            background: hoveredPlanetId === component.id
+                              ? `radial-gradient(circle, rgba(6, 182, 212, 0.5), transparent)`
+                              : `radial-gradient(circle, rgba(6, 182, 212, 0.2), transparent)`,
                           }}
+                          transition={{ duration: 0.3, ease: "easeOut" }}
                         />
 
                         {/* Glassmorphic Planet */}
@@ -660,7 +672,7 @@ export function SolarSystemDashboard() {
                         </div>
 
                         {/* Static Horizontal Label - Glass Badge */}
-                        <div
+                        <motion.div
                           className="absolute left-1/2 -translate-x-1/2 text-center whitespace-nowrap pointer-events-none px-3 py-1 rounded-full border border-white/10"
                           style={{
                             top: component.size + 10,
@@ -668,6 +680,12 @@ export function SolarSystemDashboard() {
                               "linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%)",
                             backdropFilter: "blur(10px)",
                           }}
+                          initial={{ opacity: 0, y: -5 }}
+                          animate={{
+                            opacity: hoveredPlanetId === component.id ? 1 : 0,
+                            y: hoveredPlanetId === component.id ? 0 : -5,
+                          }}
+                          transition={{ duration: 0.3, ease: "easeOut" }}
                         >
                           <p
                             className="text-white font-['Michroma'] tracking-[0.15em]"
@@ -675,7 +693,7 @@ export function SolarSystemDashboard() {
                           >
                             {component.name}
                           </p>
-                        </div>
+                        </motion.div>
                       </motion.div>
                     </motion.div>
                   </div>
