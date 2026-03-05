@@ -1,13 +1,15 @@
 import { motion } from "motion/react";
 import { ArrowLeft, Shield, Monitor, Apple, Server, HardDrive } from "lucide-react";
 import { useNavigate } from "react-router";
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Cell } from "recharts";
 
 export function OverviewDashboard() {
   const navigate = useNavigate();
 
   const agentData = [
-    { name: "Active", value: 1, color: "#10b981" },
-    { name: "Disconnected", value: 1, color: "#ef4444" },
+    { name: "Connected", value: 145, color: "#10b981" },
+    { name: "Disconnected", value: 8, color: "#ef4444" },
+    { name: "Partially Connected", value: 23, color: "#eab308" },
   ];
 
   const alertSeverities = [
@@ -66,6 +68,12 @@ export function OverviewDashboard() {
       event: "File Deleted", 
       path: "/tmp/suspicious_file.exe" 
     },
+    { 
+      timestamp: "2026-03-05 14:28:33", 
+      sourceIp: "192.168.1.78", 
+      event: "Ownership Changed", 
+      path: "/var/log/secure" 
+    },
   ];
 
   const predictiveEvents = [
@@ -77,45 +85,37 @@ export function OverviewDashboard() {
   ];
 
   const mitreAttacks = [
-    { agentName: "WIN-SRV-001", ruleName: "Credential Dumping", severity: "Critical" },
-    { agentName: "LINUX-DB-02", ruleName: "Data Exfiltration", severity: "High" },
-    { agentName: "MAC-DEV-05", ruleName: "Persistence Mechanism", severity: "Medium" },
-    { agentName: "WIN-WEB-03", ruleName: "Lateral Movement", severity: "High" },
+    { cve: "CVE-2024-1234", ruleName: "Credential Dumping", severity: "Critical" },
+    { cve: "CVE-2024-5678", ruleName: "Data Exfiltration", severity: "High" },
+    { cve: "CVE-2024-9012", ruleName: "Persistence Mechanism", severity: "Medium" },
+    { cve: "CVE-2024-3456", ruleName: "Lateral Movement", severity: "High" },
   ];
 
   return (
     <div className="relative w-full min-h-screen overflow-auto bg-black">
-      {/* Deep space background with stars */}
-      <div className="fixed inset-0 bg-gradient-to-br from-black via-[#000000] to-[#050510] -z-10">
-        <div className="absolute inset-0">
-          {[...Array(150)].map((_, i) => {
-            const size = Math.random() > 0.8 ? 2 : 1;
-            const brightness = Math.random() * 0.4 + 0.3;
-            return (
-              <motion.div
-                key={i}
-                className="absolute bg-white rounded-full"
-                style={{
-                  width: `${size}px`,
-                  height: `${size}px`,
-                  left: `${Math.random() * 100}%`,
-                  top: `${Math.random() * 100}%`,
-                  boxShadow: `0 0 ${size * 3}px rgba(255, 255, 255, ${brightness})`,
-                }}
-                animate={{
-                  opacity: [brightness * 0.5, brightness, brightness * 0.5],
-                  scale: [1, 1.3, 1],
-                }}
-                transition={{
-                  duration: 2 + Math.random() * 3,
-                  repeat: Infinity,
-                  delay: Math.random() * 2,
-                  ease: "easeInOut",
-                }}
-              />
-            );
-          })}
-        </div>
+      {/* Black background with subtle gradient - same as Planet pages */}
+      <div className="fixed inset-0 bg-black">
+        <div className="absolute inset-0 bg-gradient-to-br from-black via-[#0a0a0a] to-black" />
+        
+        {/* Subtle grid pattern */}
+        <div 
+          className="absolute inset-0 opacity-[0.03]"
+          style={{
+            backgroundImage: `
+              linear-gradient(rgba(0, 255, 136, 0.3) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(0, 255, 136, 0.3) 1px, transparent 1px)
+            `,
+            backgroundSize: "50px 50px",
+          }}
+        />
+        
+        {/* Radial gradient overlay */}
+        <div 
+          className="absolute inset-0"
+          style={{
+            background: "radial-gradient(circle at 50% 50%, rgba(0, 255, 136, 0.03) 0%, transparent 70%)",
+          }}
+        />
       </div>
 
       {/* Header */}
@@ -167,7 +167,7 @@ export function OverviewDashboard() {
               AGENTS SUMMARY
             </h2>
             <motion.div
-              className="rounded-2xl border p-8 relative overflow-hidden"
+              className="rounded-2xl border p-6 relative overflow-hidden h-full"
               style={{
                 background: "linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%)",
                 backdropFilter: "blur(30px)",
@@ -186,76 +186,24 @@ export function OverviewDashboard() {
                 }} />
               </div>
               
-              <div className="flex items-center justify-center gap-12 relative z-10 py-8">
-                {/* Connected Agents */}
-                <motion.div 
-                  className="flex flex-col items-center"
-                  animate={{
-                    opacity: [1, 0.8, 1],
-                  }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                  }}
-                >
-                  <div
-                    className="w-4 h-4 rounded-full mb-4"
-                    style={{
-                      backgroundColor: "#10b981",
-                      boxShadow: "0 0 20px rgba(16, 185, 129, 0.6)",
-                    }}
-                  />
-                  <div 
-                    className="text-5xl font-bold mb-2"
-                    style={{ 
-                      color: "#10b981",
-                      fontFamily: "Michroma",
-                    }}
-                  >
-                    {agentData[0].value}
-                  </div>
-                  <div 
-                    className="text-white/70 text-sm tracking-wide"
-                    style={{ fontFamily: "Michroma" }}
-                  >
-                    Connected
-                  </div>
-                </motion.div>
-
-                {/* Vertical Divider */}
-                <div 
-                  className="h-32 w-px"
-                  style={{
-                    background: "linear-gradient(to bottom, transparent, rgba(6, 182, 212, 0.5), transparent)",
-                  }}
-                />
-
-                {/* Disconnected Agents */}
-                <div className="flex flex-col items-center">
-                  <div
-                    className="w-4 h-4 rounded-full mb-4"
-                    style={{
-                      backgroundColor: "#ef4444",
-                      boxShadow: "0 0 20px rgba(239, 68, 68, 0.6)",
-                    }}
-                  />
-                  <div 
-                    className="text-5xl font-bold mb-2"
-                    style={{ 
-                      color: "#ef4444",
-                      fontFamily: "Michroma",
-                    }}
-                  >
-                    {agentData[1].value}
-                  </div>
-                  <div 
-                    className="text-white/70 text-sm tracking-wide"
-                    style={{ fontFamily: "Michroma" }}
-                  >
-                    Disconnected
-                  </div>
-                </div>
+              <div className="relative z-10">
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={agentData} layout="horizontal">
+                    <XAxis type="category" dataKey="name" stroke="#ffffff40" style={{ fontSize: "12px", fontFamily: "Michroma" }} />
+                    <YAxis type="number" stroke="#ffffff40" style={{ fontSize: "12px" }} />
+                    <Bar dataKey="value" radius={[8, 8, 0, 0]} animationDuration={1000}>
+                      {agentData.map((entry, index) => (
+                        <Cell 
+                          key={`cell-${index}`} 
+                          fill={entry.color}
+                          style={{
+                            filter: `drop-shadow(0 0 8px ${entry.color})`,
+                          }}
+                        />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
               </div>
             </motion.div>
           </div>
@@ -271,7 +219,7 @@ export function OverviewDashboard() {
             >
               SEVERITY
             </h2>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-4 h-full" style={{ alignContent: "start" }}>
               {alertSeverities.map((severity, index) => (
                 <motion.div
                   key={severity.level}
@@ -302,7 +250,7 @@ export function OverviewDashboard() {
                     </h3>
                   </div>
                   <div
-                    className="text-2xl"
+                    className="text-xl"
                     style={{
                       fontWeight: 600,
                       color: severity.color,
@@ -337,7 +285,7 @@ export function OverviewDashboard() {
             </h2>
             <motion.div
               onClick={() => navigate("/module/ulm")}
-              className="rounded-2xl border p-6 hover:border-cyan-400/40 transition-all duration-300 cursor-pointer group"
+              className="rounded-2xl border p-6 hover:border-cyan-400/40 transition-all duration-300 cursor-pointer group h-full"
               style={{
                 background: "linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%)",
                 backdropFilter: "blur(30px)",
@@ -400,7 +348,7 @@ export function OverviewDashboard() {
             </h2>
             <motion.div
               onClick={() => navigate("/module/fim")}
-              className="rounded-2xl border p-6 cursor-pointer hover:border-cyan-400/40 transition-all duration-300"
+              className="rounded-2xl border p-6 cursor-pointer hover:border-cyan-400/40 transition-all duration-300 h-full"
               style={{
                 background: "linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%)",
                 backdropFilter: "blur(30px)",
@@ -418,25 +366,25 @@ export function OverviewDashboard() {
                   <thead>
                     <tr className="border-b border-white/10">
                       <th 
-                        className="text-left pb-3 text-xs tracking-wider text-white/60"
+                        className="text-left pb-2 text-[10px] tracking-wider text-white/60"
                         style={{ fontFamily: "Michroma" }}
                       >
                         TIMESTAMP
                       </th>
                       <th 
-                        className="text-left pb-3 text-xs tracking-wider text-white/60"
+                        className="text-left pb-2 text-[10px] tracking-wider text-white/60"
                         style={{ fontFamily: "Michroma" }}
                       >
                         SOURCE IP
                       </th>
                       <th 
-                        className="text-left pb-3 text-xs tracking-wider text-white/60"
+                        className="text-left pb-2 text-[10px] tracking-wider text-white/60"
                         style={{ fontFamily: "Michroma" }}
                       >
                         EVENT
                       </th>
                       <th 
-                        className="text-left pb-3 text-xs tracking-wider text-white/60"
+                        className="text-left pb-2 text-[10px] tracking-wider text-white/60"
                         style={{ fontFamily: "Michroma" }}
                       >
                         PATH
@@ -452,20 +400,20 @@ export function OverviewDashboard() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.3, delay: 0.3 + index * 0.05 }}
                       >
-                        <td className="py-3 text-sm text-white/70">
+                        <td className="py-2 text-xs text-white/70">
                           {event.timestamp}
                         </td>
-                        <td className="py-3 text-sm text-cyan-400">
+                        <td className="py-2 text-xs text-cyan-400">
                           {event.sourceIp}
                         </td>
                         <td 
-                          className="py-3 text-sm text-white/80"
+                          className="py-2 text-xs text-white/80"
                           style={{ fontFamily: "monospace" }}
                         >
                           {event.event}
                         </td>
                         <td 
-                          className="py-3 text-xs text-white/60"
+                          className="py-2 text-xs text-white/60"
                           style={{ fontFamily: "monospace" }}
                         >
                           {event.path}
@@ -499,7 +447,7 @@ export function OverviewDashboard() {
             </h2>
             <motion.div
               onClick={() => navigate("/module/predictive")}
-              className="rounded-2xl border p-6 cursor-pointer hover:border-cyan-400/40 transition-all duration-300"
+              className="rounded-2xl border p-6 cursor-pointer hover:border-cyan-400/40 transition-all duration-300 h-full"
               style={{
                 background: "linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%)",
                 backdropFilter: "blur(30px)",
@@ -591,7 +539,7 @@ export function OverviewDashboard() {
             </h2>
             <motion.div
               onClick={() => navigate("/module/mitre")}
-              className="rounded-2xl border p-6 cursor-pointer hover:border-cyan-400/40 transition-all duration-300"
+              className="rounded-2xl border p-6 cursor-pointer hover:border-cyan-400/40 transition-all duration-300 h-full"
               style={{
                 background: "linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%)",
                 backdropFilter: "blur(30px)",
@@ -609,19 +557,19 @@ export function OverviewDashboard() {
                   <thead>
                     <tr className="border-b border-white/10">
                       <th 
-                        className="text-left pb-3 text-xs tracking-wider text-white/60"
+                        className="text-left pb-2 text-[10px] tracking-wider text-white/60"
                         style={{ fontFamily: "Michroma" }}
                       >
-                        AGENT NAME
+                        CVE
                       </th>
                       <th 
-                        className="text-left pb-3 text-xs tracking-wider text-white/60"
+                        className="text-left pb-2 text-[10px] tracking-wider text-white/60"
                         style={{ fontFamily: "Michroma" }}
                       >
                         RULE NAME
                       </th>
                       <th 
-                        className="text-left pb-3 text-xs tracking-wider text-white/60"
+                        className="text-left pb-2 text-[10px] tracking-wider text-white/60"
                         style={{ fontFamily: "Michroma" }}
                       >
                         SEVERITY
@@ -643,15 +591,15 @@ export function OverviewDashboard() {
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ duration: 0.3, delay: 0.4 + index * 0.05 }}
                         >
-                          <td className="py-3 text-sm text-white/70">
-                            {attack.agentName}
+                          <td className="py-2 text-xs text-cyan-400">
+                            {attack.cve}
                           </td>
-                          <td className="py-3 text-sm text-white/80">
+                          <td className="py-2 text-xs text-white/80">
                             {attack.ruleName}
                           </td>
-                          <td className="py-3">
+                          <td className="py-2">
                             <span
-                              className="px-3 py-1 rounded-full text-xs font-semibold"
+                              className="px-2 py-0.5 rounded-full text-[10px] font-semibold"
                               style={{
                                 backgroundColor: `${severityColor}20`,
                                 color: severityColor,
