@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { motion, AnimatePresence } from "motion/react";
 import {
@@ -12,7 +12,6 @@ import {
   Crosshair,
   Target,
 } from "lucide-react";
-import { TypewriterLoader } from "./TypewriterLoader";
 
 // Solar System Dashboard with Premium Glassmorphism
 interface WazuhComponent {
@@ -33,11 +32,6 @@ export function SolarSystemDashboard() {
   const navigate = useNavigate();
   const [selectedComponent, setSelectedComponent] =
     useState<WazuhComponent | null>(null);
-  const [showTypewriter, setShowTypewriter] = useState(false);
-  const [typewriterText, setTypewriterText] = useState("");
-  const navigationTimeoutRef = useRef<NodeJS.Timeout | null>(
-    null,
-  );
   const [wazuhData, setWazuhData] = useState({
     alerts: { critical: 12, high: 45, medium: 89, low: 234 },
     agents: { active: 156, disconnected: 8, total: 164 },
@@ -197,50 +191,14 @@ export function SolarSystemDashboard() {
   ];
 
   const handlePlanetClick = (component: WazuhComponent) => {
-    // Show typewriter loading message
-    const messages = [
-      `Initializing ${component.name} Module...`,
-      `Launching ${component.name} System...`,
-      `Accessing ${component.name} Interface...`,
-      `Loading ${component.name} Dashboard...`,
-    ];
-
-    const randomMessage =
-      messages[Math.floor(Math.random() * messages.length)];
-    setTypewriterText(randomMessage);
-    setShowTypewriter(true);
-
-    // Calculate delay based on message length (1-3 seconds)
-    const typingDuration = randomMessage.length * 40; // 40ms per character
-    const totalDelay = typingDuration + 1200; // Add 1.2s pause after typing completes
-
-    // Navigate to module dashboard page after delay
-    navigationTimeoutRef.current = setTimeout(() => {
-      navigate(`/module/${component.id}`);
-    }, totalDelay);
+    // Navigate to module dashboard page directly
+    navigate(`/module/${component.id}`);
   };
 
   const handleEnterModule = () => {
     if (selectedComponent) {
-      // Show typewriter before navigating
-      const messages = [
-        `Initializing ${selectedComponent.name} Module...`,
-        `Launching ${selectedComponent.name} System...`,
-        `Accessing ${selectedComponent.name} Interface...`,
-      ];
-
-      const randomMessage =
-        messages[Math.floor(Math.random() * messages.length)];
-      setTypewriterText(randomMessage);
-      setShowTypewriter(true);
       setSelectedComponent(null); // Close the panel
-
-      const typingDuration = randomMessage.length * 40;
-      const totalDelay = typingDuration + 1200;
-
-      setTimeout(() => {
-        navigate(`/planet/${selectedComponent.id}`);
-      }, totalDelay);
+      navigate(`/planet/${selectedComponent.id}`);
     }
   };
 
@@ -276,15 +234,6 @@ export function SolarSystemDashboard() {
     }, 3000);
 
     return () => clearInterval(interval);
-  }, []);
-
-  // Cleanup navigation timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (navigationTimeoutRef.current) {
-        clearTimeout(navigationTimeoutRef.current);
-      }
-    };
   }, []);
 
   return (
@@ -373,16 +322,6 @@ export function SolarSystemDashboard() {
         />
       </div>
 
-      {/* Typewriter Animation Overlay */}
-      <AnimatePresence>
-        {showTypewriter && (
-          <TypewriterLoader
-            text={typewriterText}
-            onComplete={() => {}}
-          />
-        )}
-      </AnimatePresence>
-
       {/* Header - Clean Minimal Design */}
       <div
         className="absolute top-0 left-0 right-0 z-30"
@@ -449,12 +388,12 @@ export function SolarSystemDashboard() {
               aspectRatio: "1 / 1",
             }}
           >
-            {/* Central Wazuh Core */}
+            {/* Central Wazuh Core - Clickable */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
               <motion.div className="relative">
                 {/* Core Glassmorphic Sphere */}
                 <motion.div
-                  className="relative rounded-full border border-white/20"
+                  className="relative rounded-full border border-white/20 cursor-pointer"
                   style={{
                     width: "120px",
                     height: "120px",
@@ -476,8 +415,18 @@ export function SolarSystemDashboard() {
                     repeat: Infinity,
                     ease: "easeInOut",
                   }}
+                  whileHover={{
+                    scale: 1.05,
+                    boxShadow: "inset 15px 15px 30px rgba(255,255,255,0.15), 0 0 120px rgba(251, 191, 36, 0.8), 0 0 60px rgba(234, 179, 8, 0.6)",
+                  }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    console.log("Imperium Core clicked - navigating to overview");
+                    navigate("/overview");
+                  }}
                 >
-                  <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                     <Shield
                       className="w-14 h-14 text-white/90"
                       strokeWidth={1.5}
@@ -487,7 +436,7 @@ export function SolarSystemDashboard() {
 
                 {/* Orbiting Rings */}
                 <motion.div
-                  className="absolute top-1/2 left-1/2 w-32 h-32 border border-yellow-400/20 rounded-full -translate-x-1/2 -translate-y-1/2"
+                  className="absolute top-1/2 left-1/2 w-32 h-32 border border-yellow-400/20 rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none"
                   animate={{ rotate: -360 }}
                   transition={{
                     duration: 20,
@@ -496,7 +445,7 @@ export function SolarSystemDashboard() {
                   }}
                 />
                 <motion.div
-                  className="absolute top-1/2 left-1/2 w-40 h-40 border border-amber-400/10 rounded-full -translate-x-1/2 -translate-y-1/2"
+                  className="absolute top-1/2 left-1/2 w-40 h-40 border border-amber-400/10 rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none"
                   animate={{ rotate: 360 }}
                   transition={{
                     duration: 25,
@@ -708,7 +657,7 @@ export function SolarSystemDashboard() {
 
       {/* Side Panel - Glassmorphic */}
       <AnimatePresence>
-        {selectedComponent && !showTypewriter && (
+        {selectedComponent && (
           <motion.div
             className="fixed right-0 top-0 h-full w-[30%] min-w-[400px] border-l border-white/10 p-8 shadow-2xl z-40 flex flex-col justify-center"
             style={{
@@ -759,7 +708,6 @@ export function SolarSystemDashboard() {
                   </h3>
                   <p
                     className="text-white/60 text-sm"
-                    style={{ fontFamily: "Inter, sans-serif" }}
                   >
                     {selectedComponent.description}
                   </p>
@@ -780,9 +728,6 @@ export function SolarSystemDashboard() {
                       <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 mt-2 flex-shrink-0" />
                       <p
                         className="text-white/80 text-sm leading-relaxed"
-                        style={{
-                          fontFamily: "Inter, sans-serif",
-                        }}
                       >
                         {item}
                       </p>
@@ -801,7 +746,6 @@ export function SolarSystemDashboard() {
                   backdropFilter: "blur(10px)",
                   boxShadow:
                     "0 0 30px rgba(6, 182, 212, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)",
-                  fontFamily: "Inter, sans-serif",
                 }}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}

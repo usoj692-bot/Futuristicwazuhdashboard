@@ -504,7 +504,6 @@ export function LandingPage() {
             <motion.p
               className="text-base font-light tracking-[0.25em] text-cyan-300/80 mb-8"
               style={{
-                fontFamily: "'Inter', sans-serif",
                 textShadow: "0 0 20px rgba(6, 182, 212, 0.4)",
               }}
               initial={{ opacity: 0 }}

@@ -7,40 +7,54 @@ interface ModuleLoadingScreenProps {
 
 export function ModuleLoadingScreen({ onComplete }: ModuleLoadingScreenProps) {
   const [currentStep, setCurrentStep] = useState(0);
-  const [showCursor, setShowCursor] = useState(true);
+  const [displayedText, setDisplayedText] = useState("");
+  const [currentCharIndex, setCurrentCharIndex] = useState(0);
+  const [showDots, setShowDots] = useState(false);
 
   const steps = [
-    { text: "Initializing", duration: 1000 },
-    { text: "Analyzing", duration: 1000 },
-    { text: "Preparing your dashboard", duration: 1500, glow: true },
+    { text: "Initializing", duration: 1500 },
+    { text: "Analyzing", duration: 1500 },
+    { text: "Preparing Your Dashboard", duration: 1500, glow: true },
   ];
 
-  // Blinking cursor effect
-  useEffect(() => {
-    const cursorInterval = setInterval(() => {
-      setShowCursor((prev) => !prev);
-    }, 530);
-
-    return () => clearInterval(cursorInterval);
-  }, []);
-
-  // Step progression
+  // Typewriter effect for current step
   useEffect(() => {
     if (currentStep < steps.length) {
-      const timer = setTimeout(() => {
-        setCurrentStep((prev) => prev + 1);
-      }, steps[currentStep].duration);
+      const currentText = steps[currentStep].text;
+      
+      if (currentCharIndex < currentText.length) {
+        const charTimer = setTimeout(() => {
+          setDisplayedText((prev) => prev + currentText[currentCharIndex]);
+          setCurrentCharIndex((prev) => prev + 1);
+        }, 40); // 40ms per character for typewriter effect
 
-      return () => clearTimeout(timer);
+        return () => clearTimeout(charTimer);
+      } else if (!showDots) {
+        // Text complete, show dots
+        const dotsTimer = setTimeout(() => {
+          setShowDots(true);
+        }, 200);
+        return () => clearTimeout(dotsTimer);
+      } else {
+        // Dots shown, wait before moving to next step
+        const stepTimer = setTimeout(() => {
+          setCurrentStep((prev) => prev + 1);
+          setDisplayedText("");
+          setCurrentCharIndex(0);
+          setShowDots(false);
+        }, steps[currentStep].duration);
+
+        return () => clearTimeout(stepTimer);
+      }
     } else {
       // All steps complete, trigger transition
       const completeTimer = setTimeout(() => {
         onComplete();
-      }, 100);
+      }, 300);
 
       return () => clearTimeout(completeTimer);
     }
-  }, [currentStep, onComplete]);
+  }, [currentStep, currentCharIndex, showDots, onComplete]);
 
   return (
     <motion.div
@@ -96,44 +110,63 @@ export function ModuleLoadingScreen({ onComplete }: ModuleLoadingScreenProps) {
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.3 }}
             >
-              <motion.p
-                className="font-['Michroma'] tracking-[0.2em] text-2xl"
-                style={{
-                  color: "#EAEAEA",
-                  textShadow: steps[currentStep].glow
-                    ? "0 0 30px rgba(0, 255, 136, 0.6)"
-                    : "none",
-                }}
-              >
-                {steps[currentStep].text}
-              </motion.p>
+              <div className="flex items-center">
+                {/* Typewriter text */}
+                <motion.p
+                  className="font-['Michroma'] tracking-[0.2em] text-2xl"
+                  style={{
+                    color: "#00FF88",
+                    textShadow: steps[currentStep].glow
+                      ? "0 0 30px rgba(0, 255, 136, 0.8), 0 0 60px rgba(0, 255, 136, 0.4)"
+                      : "0 0 20px rgba(0, 255, 136, 0.6)",
+                  }}
+                >
+                  {displayedText}
+                </motion.p>
 
-              {/* Animated dots */}
-              <span className="flex gap-[3px] ml-1">
-                {[...Array(5)].map((_, i) => (
+                {/* 5 Animated Dots after text completion */}
+                {showDots && (
+                  <span className="flex gap-[4px] ml-2">
+                    {[...Array(5)].map((_, i) => (
+                      <motion.span
+                        key={i}
+                        className="inline-block font-['Michroma'] text-2xl"
+                        style={{
+                          color: "#00FF88",
+                          textShadow: "0 0 20px rgba(0, 255, 136, 0.6)",
+                        }}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{
+                          duration: 0.3,
+                          delay: i * 0.15,
+                          repeat: Infinity,
+                          repeatDelay: 0.75,
+                        }}
+                      >
+                        .
+                      </motion.span>
+                    ))}
+                  </span>
+                )}
+
+                {/* Blinking cursor - only show while typing */}
+                {!showDots && currentCharIndex < steps[currentStep].text.length && (
                   <motion.span
-                    key={i}
-                    style={{ color: "#EAEAEA" }}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{
-                      duration: 0.3,
-                      delay: i * 0.15,
-                      repeat: Infinity,
-                      repeatDelay: 0.75,
+                    className="ml-1 inline-block w-[3px] h-6"
+                    style={{
+                      backgroundColor: "#00FF88",
+                      boxShadow: "0 0 10px rgba(0, 255, 136, 0.8)",
                     }}
-                  >
-                    .
-                  </motion.span>
-                ))}
-              </span>
-
-              {/* Blinking cursor */}
-              <motion.span
-                className="ml-1 inline-block w-[3px] h-6 bg-[#EAEAEA]"
-                animate={{ opacity: showCursor ? 1 : 0 }}
-                transition={{ duration: 0 }}
-              />
+                    animate={{ opacity: [1, 0, 1] }}
+                    transition={{ 
+                      duration: 1.2,
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    }}
+                  />
+                )}
+              </div>
             </motion.div>
           )}
         </AnimatePresence>

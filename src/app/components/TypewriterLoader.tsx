@@ -10,6 +10,7 @@ export function TypewriterLoader({ text, onComplete }: TypewriterLoaderProps) {
   const [displayedText, setDisplayedText] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [letters, setLetters] = useState<string[]>([]);
+  const [showDots, setShowDots] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Reset state when text changes
@@ -17,6 +18,7 @@ export function TypewriterLoader({ text, onComplete }: TypewriterLoaderProps) {
     setDisplayedText("");
     setCurrentIndex(0);
     setLetters([]);
+    setShowDots(false);
   }, [text]);
 
   useEffect(() => {
@@ -32,17 +34,28 @@ export function TypewriterLoader({ text, onComplete }: TypewriterLoaderProps) {
           clearTimeout(timeoutRef.current);
         }
       };
-    } else if (onComplete && currentIndex === text.length) {
+    } else if (currentIndex === text.length && !showDots) {
+      // Text complete, show dots
+      timeoutRef.current = setTimeout(() => {
+        setShowDots(true);
+      }, 200);
+      return () => {
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+        }
+      };
+    } else if (showDots && onComplete) {
+      // Dots shown, wait a bit then complete
       timeoutRef.current = setTimeout(() => {
         onComplete();
-      }, 800);
+      }, 1500);
       return () => {
         if (timeoutRef.current) {
           clearTimeout(timeoutRef.current);
         }
       };
     }
-  }, [currentIndex, text, onComplete]);
+  }, [currentIndex, text, onComplete, showDots]);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -104,7 +117,6 @@ export function TypewriterLoader({ text, onComplete }: TypewriterLoaderProps) {
                   key={index}
                   className="inline-block relative"
                   style={{
-                    fontFamily: 'Inter, sans-serif',
                     fontWeight: 600,
                     fontSize: '1.75rem',
                     letterSpacing: '0.05em',
@@ -161,7 +173,38 @@ export function TypewriterLoader({ text, onComplete }: TypewriterLoaderProps) {
                 </motion.span>
               ))}
 
-              {/* Premium Glowing Cursor Beam */}
+              {/* Animated Dots after text completion - 5 dots */}
+              {showDots && (
+                <span className="flex gap-[3px] ml-2">
+                  {[...Array(5)].map((_, i) => (
+                    <motion.span
+                      key={i}
+                      className="inline-block"
+                      style={{
+                        fontWeight: 600,
+                        fontSize: '1.75rem',
+                        background: "linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #8b5cf6 100%)",
+                        WebkitBackgroundClip: "text",
+                        WebkitTextFillColor: "transparent",
+                        backgroundClip: "text",
+                        filter: "drop-shadow(0 0 20px rgba(6, 182, 212, 0.5))",
+                      }}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{
+                        duration: 0.3,
+                        delay: i * 0.15,
+                        repeat: Infinity,
+                        repeatDelay: 0.75,
+                      }}
+                    >
+                      .
+                    </motion.span>
+                  ))}
+                </span>
+              )}
+
+              {/* Premium Glowing Cursor Beam - only show while typing */}
               {currentIndex < text.length && (
                 <motion.div className="relative inline-block ml-1">
                   {/* Main Cursor Beam */}
